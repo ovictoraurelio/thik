@@ -39,5 +39,11 @@
     "serve-index": "^1.9.0",
     "serve-static": "^1.12.3",
     "wiredep": "^4.0.0"
+  },
+  "dependencies": {
+    "angular": "^1.6.4",
+    "bootstrap": "^3.3.7",    
+    "font-awesome": "^4.7.0",
+    "angular-ui-router": "^1.0.3"
   }
 }

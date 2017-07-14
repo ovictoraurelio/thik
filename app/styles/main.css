@@ -6,7 +6,7 @@
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
 /*! normalize.css v5.0.0 | MIT License | github.com/necolas/normalize.css */
-@import url("https://fonts.googleapis.com/css?family=Orbitron");
+@import url("https://fonts.googleapis.com/css?family=Ubuntu");
 html {
   font-family: sans-serif;
   line-height: 1.15;
@@ -8319,7 +8319,7 @@ a.text-gray-dark:focus, a.text-gray-dark:hover {
   clip: auto; }
 
 .orbitron {
-  font-family: 'Orbitron', sans-serif; }
+  font-family: 'Ubuntu', sans-serif; }
 
 /* YOUR CUSTOM STYLES */
 html,

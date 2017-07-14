@@ -112,6 +112,10 @@ gulp.task('wiredep', () => {
             ignorePath: /^(\.\.\/)+/
         }))
     .pipe(gulp.dest('app'));
+
+		gulp
+		.src(gnf(null, 'package.json'), {base:'./'})
+    .pipe(gulp.dest('app'));
 });
 
 gulp.task('watch', /*['connect'],*/ () => {
