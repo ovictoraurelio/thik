@@ -1,5 +1,6 @@
 {
-  "directory": "bower_components/",
+  "directory": ".tmp/node_modules/",
+  "bowerJson": "require('./package.json')",
   "timeout": 120000,
   "registry": {
     "search": [

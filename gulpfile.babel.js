@@ -82,7 +82,7 @@ gulp.task('serve', ['styles'], () => {
 		server: {
 			baseDir: './app',
 			routes: {
-	        '/node_modules': '.tmp/node_modules'
+	        '/.tmp/node_modules/': '.tmp/node_modules/'
 	    }
 		}
   });
@@ -100,24 +100,28 @@ gulp.task('serve:dist', ['default'], () => {
   });
 });
 
+gulp.task('de', ()=>{
+	let vendor = gnf(null, './package.json');
+	for (let file of vendor) {
+			let t = file.split('/')[2];
+			console.log('Including dependencie of '+t);
+	   	gulp.src(file).pipe(gulp.dest('.tmp/node_modules/'+t));
+	}
+});
+
 gulp.task('wi', () => {
 
 	var wiredep = require('wiredep').stream;
+	gulp.src('app/styles/*.scss')
+	    .pipe(wiredep({bowerJson: require('./package.json')}))
+	    .pipe(gulp.dest('app/styles'));
 
-  gulp.src('app/styles/*.scss')
-    .pipe(wiredep({
-		  directory: '.tmp/node_modules', // default: '.bowerrc'.directory || bower_components
-		  bowerJson: 'package.json',        // default: require('./bower.json')
-		}))
-    .pipe(gulp.dest('app/styles'));
-
-  gulp.src('app/*.html')
-    .pipe(wiredep({
-            ignorePath: /^(\.\.\/)+/,
-				  	directory: '.tmp/node_modules', // default: '.bowerrc'.directory || bower_components
-				  	bowerJson: 'package.json',        // default: require('./bower.json')
-		}))
-		.pipe(gulp.dest('app'));
+	  gulp.src('app/*.html')
+	    .pipe(wiredep({
+							bowerJson: require('./package.json'),
+	            ignorePath: /^(\.\.\/)+/
+	        }))
+	    .pipe(gulp.dest('app'));
 
 /*	gulp.src('')
 		.pipe(wiredep({
