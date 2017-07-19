@@ -100,7 +100,7 @@ gulp.task('serve:dist', ['default'], () => {
   });
 });
 
-gulp.task('de', ()=>{
+gulp.task('copy-to-tmp', () => {
 	let vendor = gnf(null, './package.json');
 	for (let file of vendor) {
 			let t = file.split('/')[2];
@@ -109,7 +109,7 @@ gulp.task('de', ()=>{
 	}
 });
 
-gulp.task('wi', () => {
+gulp.task('inject-vendor', ['copy-to-tmp'], () => {
 
 	var wiredep = require('wiredep').stream;
 	gulp.src('app/styles/*.scss')
@@ -122,55 +122,20 @@ gulp.task('wi', () => {
 	            ignorePath: /^(\.\.\/)+/
 	        }))
 	    .pipe(gulp.dest('app'));
-
-/*	gulp.src('')
-		.pipe(wiredep({
-			directory: '.tmp/node_modules/', // default: '.bowerrc'.directory || bower_components
-			bowerJson: '.package.json'
-		}))
-		.pipe(gulp.dest('app'));
-		{ gulp.src('app/styles/*.scss')
-		.pipe(wiredep())
-		.pipe(gulp.dest('app/styles'));
-
-	gulp.src('app/*.html')
-		.pipe(wiredep({
-						ignorePath: /^(\.\.\/)+/
-				}))
-.pipe(gulp.dest('app'));*/
 });
 
-gulp.task('wiredep', () => {
-  let wiredep = require('wiredep').stream;
-
-	let vendor = gnf(null, './package.json');
-	for (let file of vendor) {
-			let t = file.split('/')[2];
-			console.log('Including dependencie of '+t);
-	   	gulp.src(file).pipe(gulp.dest('.tmp/node_modules/'+t));
-	}
-
-  gulp.src('app/styles/*.scss')
-    .pipe(wiredep())
-    .pipe(gulp.dest('app/styles'));
-
-  gulp.src('app/*.html')
-    .pipe(wiredep({
-            ignorePath: /^(\.\.\/)+/
-        }))
-    .pipe(gulp.dest('app'));
-});
-
-gulp.task('inj', ['wiredep'], function () {
+gulp.task('inject-src', function () {
   var target = gulp.src('./app/index.html');
   // It's not necessary to read the files (will speed up things), we're only after their paths:
-	var vendor = gnf(null, './package.json');
-	var src = vendor.concat(['./app/**/*.js', './app/**/*.css']);
-	console.log(src);
-  var sources = gulp.src(src, {read: false});
+  var sources = gulp.src(['app/**/*.js', './app/**/*.css'], {read: false});
 
-  return target.pipe(inject(sources)).pipe(gulp.dest('./app'));
+  return target.pipe(inject(sources,{
+                ignorePath: 'app',
+                addRootSlash: false
+            })).pipe(gulp.dest('./app'));
 });
+
+gulp.task('inject', ['inject-vendor', 'inject-src']);
 
 gulp.task('watch', /*['connect'],*/ () => {
   $.livereload.listen();
