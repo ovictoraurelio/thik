@@ -15,6 +15,8 @@ import loadPlugins from 'gulp-load-plugins';
 import browserSync from 'browser-sync';
 import htmlmin from 'gulp-htmlmin';
 import bowerFiles from 'main-bower-files';
+import inject from 'gulp-inject';
+import gnf from 'gulp-npm-files';
 
 var $ = loadPlugins();
 var reload = browserSync.reload;
@@ -80,7 +82,7 @@ gulp.task('serve', ['styles'], () => {
 		server: {
 			baseDir: './app',
 			routes: {
-	        '/bower_components': 'bower_components'
+	        '/node_modules': '.tmp/node_modules'
 	    }
 		}
   });
@@ -98,10 +100,51 @@ gulp.task('serve:dist', ['default'], () => {
   });
 });
 
-gulp.task('wiredep', () => {
-  var wiredep = require('wiredep').stream;
+gulp.task('wi', () => {
 
-	//gulp.src('bower_components/**/*').pipe(gulp.dest('.tmp/bower_components'));
+	var wiredep = require('wiredep').stream;
+
+  gulp.src('app/styles/*.scss')
+    .pipe(wiredep({
+		  directory: '.tmp/node_modules', // default: '.bowerrc'.directory || bower_components
+		  bowerJson: 'package.json',        // default: require('./bower.json')
+		}))
+    .pipe(gulp.dest('app/styles'));
+
+  gulp.src('app/*.html')
+    .pipe(wiredep({
+            ignorePath: /^(\.\.\/)+/,
+				  	directory: '.tmp/node_modules', // default: '.bowerrc'.directory || bower_components
+				  	bowerJson: 'package.json',        // default: require('./bower.json')
+		}))
+		.pipe(gulp.dest('app'));
+
+/*	gulp.src('')
+		.pipe(wiredep({
+			directory: '.tmp/node_modules/', // default: '.bowerrc'.directory || bower_components
+			bowerJson: '.package.json'
+		}))
+		.pipe(gulp.dest('app'));
+		{ gulp.src('app/styles/*.scss')
+		.pipe(wiredep())
+		.pipe(gulp.dest('app/styles'));
+
+	gulp.src('app/*.html')
+		.pipe(wiredep({
+						ignorePath: /^(\.\.\/)+/
+				}))
+.pipe(gulp.dest('app'));*/
+});
+
+gulp.task('wiredep', () => {
+  let wiredep = require('wiredep').stream;
+
+	let vendor = gnf(null, './package.json');
+	for (let file of vendor) {
+			let t = file.split('/')[2];
+			console.log('Including dependencie of '+t);
+	   	gulp.src(file).pipe(gulp.dest('.tmp/node_modules/'+t));
+	}
 
   gulp.src('app/styles/*.scss')
     .pipe(wiredep())
@@ -112,10 +155,17 @@ gulp.task('wiredep', () => {
             ignorePath: /^(\.\.\/)+/
         }))
     .pipe(gulp.dest('app'));
+});
 
-		gulp
-		.src(gnf(null, 'package.json'), {base:'./'})
-    .pipe(gulp.dest('app'));
+gulp.task('inj', ['wiredep'], function () {
+  var target = gulp.src('./app/index.html');
+  // It's not necessary to read the files (will speed up things), we're only after their paths:
+	var vendor = gnf(null, './package.json');
+	var src = vendor.concat(['./app/**/*.js', './app/**/*.css']);
+	console.log(src);
+  var sources = gulp.src(src, {read: false});
+
+  return target.pipe(inject(sources)).pipe(gulp.dest('./app'));
 });
 
 gulp.task('watch', /*['connect'],*/ () => {
