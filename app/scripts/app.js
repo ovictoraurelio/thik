@@ -4,9 +4,9 @@
 
 /**
  * @ngdoc overview
- * @name victorAurelioApp
+ * @name thikApp
  * @description
- * # victorAurelioApp
+ * # thikApp
  *
  * Main module of the application.
  */
@@ -14,25 +14,18 @@
 
 angular.module('thikApp', [
       'ui.router',
-      //'ngCookies',
-      //'ngPassport.basicStrategy',
+      'ngCookies',
+      'ngPassport.basicStrategy',
 ]).config(['$stateProvider', '$urlRouterProvider',function($stateProvider, $urlRouterProvider) {
       //
-      // For any unmatched url, redirect to /state1
+      // For any unmatched url, redirect to /login
       $urlRouterProvider.otherwise('login');
 
       $stateProvider
         .state('login', {
             url: '/login',
-            templateUrl: 'views/login.html',
-            controller: 'LoginCtrl'
+            templateUrl: 'views/login.html'
         });
-
-    /*$routeProvider.when('/', {
-        templateUrl: 'views/login.html', controller: 'LoginCtrl'
-    }).otherwise({
-        redirectTo: '/'
-    });*/
 }]);
 
 }());
