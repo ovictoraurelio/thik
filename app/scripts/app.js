@@ -13,18 +13,19 @@
 
 
 angular.module('thikApp', [
-      'ui-route',
-      'ngCookies',
-      'ngPassport.basicStrategy',
-]).config(['$routeProvider',function($stateProvider, $urlRouterProvider) {
+      'ui.router',
+      //'ngCookies',
+      //'ngPassport.basicStrategy',
+]).config(['$stateProvider', '$urlRouterProvider',function($stateProvider, $urlRouterProvider) {
       //
       // For any unmatched url, redirect to /state1
-      $urlRouterProvider.otherwise("/login");
+      $urlRouterProvider.otherwise('login');
 
       $stateProvider
         .state('login', {
-            url: "/login",
-            templateUrl: "views/login.html"
+            url: '/login',
+            templateUrl: 'views/login.html',
+            controller: 'LoginCtrl'
         });
 
     /*$routeProvider.when('/', {
