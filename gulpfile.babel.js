@@ -74,10 +74,10 @@ gulp.task('extras', () => {
 
 gulp.task('clean', require('del').bind(null, ['.tmp', 'dist']));
 
-gulp.task('serve', ['styles'], () => {
+gulp.task('run', ['styles', 'watch'], () => {
   browserSync({
     notify: false,
-		browser: ["google-chrome"],
+		//browser: ["google-chrome"],
     //server: ['.tmp', 'app']
 		server: {
 			baseDir: './app',
@@ -87,10 +87,10 @@ gulp.task('serve', ['styles'], () => {
 		}
   });
 
-  gulp.watch(['app/**/*.html'], reload);
-  gulp.watch(['app/styles/**/*.{scss,css}'], ['styles', reload]);
-  gulp.watch(['app/scripts/**/*.js'], ['jshint']);
-  gulp.watch(['app/images/**/*'], reload);
+  //gulp.watch(['app/**/*.html'], reload);
+  //gulp.watch(['app/styles/**/*.{scss,css}'], ['styles', reload]);
+  //gulp.watch(['app/scripts/**/*.js'], ['jshint']);
+  //gulp.watch(['app/images/**/*'], reload);
 });
 
 gulp.task('serve:dist', ['default'], () => {
@@ -125,14 +125,12 @@ gulp.task('inject-vendor', ['copy-to-tmp'], () => {
 });
 
 gulp.task('inject-src', function () {
-  var target = gulp.src('./app/index.html');
-  // It's not necessary to read the files (will speed up things), we're only after their paths:
   var sources = gulp.src(['app/**/*.js', './app/**/*.css'], {read: false});
 
-  return target.pipe(inject(sources,{
-                ignorePath: 'app',
-                addRootSlash: false
-            })).pipe(gulp.dest('./app'));
+	gulp.src('./app/index.html').pipe(inject(sources,{
+      ignorePath: 'app',
+      addRootSlash: false
+  })).pipe(gulp.dest('./app'));
 });
 
 gulp.task('inject', ['inject-vendor', 'inject-src']);
@@ -148,7 +146,7 @@ gulp.task('watch', /*['connect'],*/ () => {
   ]).on('change', $.livereload.changed);
 
   gulp.watch('app/styles/**/*.scss', ['styles']);
-  gulp.watch('bower.json', ['wiredep']);
+  gulp.watch('package.json', ['inject']);
 });
 
 gulp.task('build', ['jshint', 'html', 'images', 'fonts', 'extras'], () => {
